@@ -58,6 +58,9 @@ export default function Page() {
   }
 
   async function onSubmit(values: z.infer<typeof schema>) {
+    if (codeExamples.length === 0) {
+      return toast.error("Adicione um exemplo de código.");
+    }
     console.log({ values, codeExamples, content });
   }
 
