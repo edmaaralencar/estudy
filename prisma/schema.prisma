@@ -6,16 +6,60 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-model Post {
-  id       String @id @default(uuid())
-  name     String
-  category String
-  content  String
+model User {
+  id             String    @id @default(uuid())
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  role           String    @default("user")
 
+  Account Account[]
+  posts   Post[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+// aproved - requested - refused
+
+model Post {
+  id        String   @id @default(uuid())
+  name      String
+  category  String
+  content   String
+  status    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  user         User              @relation(fields: [userId], references: [id])
   codeExamples PostCodeExample[]
 
   @@map("posts")
@@ -27,7 +71,7 @@ model PostCodeExample {
   code   String
   postId String
 
-  post Post @relation(fields: [postId], references: [id])
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@map("post_code_examples")
 }

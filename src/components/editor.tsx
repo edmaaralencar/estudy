@@ -13,6 +13,7 @@ import {
   RxChevronDown,
   RxChatBubble,
 } from "react-icons/rx";
+import { BiCodeBlock } from "react-icons/bi";
 
 import "highlight.js/styles/tokyo-night-dark.css";
 import { BubbleButton } from "./bubble-button";
@@ -26,7 +27,7 @@ lowlight.registerLanguage("html", html);
 type EditorProps = {
   editable: boolean;
   content: string;
-  onChange?: FormEventHandler<HTMLDivElement> | undefined;
+  onChange?: (value: string) => void;
 };
 
 export function Editor({ editable, content, onChange }: EditorProps) {
@@ -38,6 +39,11 @@ export function Editor({ editable, content, onChange }: EditorProps) {
         lowlight,
       }),
     ],
+    onUpdate: ({ editor }) => {
+      if (onChange) {
+        onChange(editor.getHTML());
+      }
+    },
     content,
     editorProps: {
       attributes: {
@@ -47,82 +53,13 @@ export function Editor({ editable, content, onChange }: EditorProps) {
     editable,
   });
 
-  const addImage = useCallback(() => {
-    const url = window.prompt("URL");
-
-    if (url) {
-      editor?.chain().clearContent();
-      editor?.chain().focus().setImage({ src: url }).run();
-    }
-  }, [editor]);
-
   return (
     <>
       <EditorContent
         editor={editor}
-        className="prose prose-invert prose-violet w-full"
-        onChange={onChange}
+        className="prose prose-invert prose-violet w-full prose-code:bg-[#00000080] prose-code:p-2 prose-code:before:hidden prose-code:after:hidden"
       />
-      {/* {editor && (
-        <FloatingMenu editor={editor} />
-        // <FloatingMenu
-        //   editor={editor}
-        //   className="bg-zinc-700 shadow-xl py-2 px-1 border border-zinc-600 shadow-black/20 rounded-lg overflow-hidden flex flex-col gap-1"
-        //   shouldShow={({ state }) => {
-        //     const { $from } = state.selection;
-
-        //     const currentLineText = $from.nodeBefore?.textContent;
-
-        //     return currentLineText === "/";
-        //   }}
-        // >
-        //   <button className="flex items-center gap-2 p-1 rounded min-w-[280px] hover:bg-zinc-600">
-        //     <img
-        //       src="http://www.notion.so/images/blocks/text/en-US.png"
-        //       alt="Text"
-        //       className="w-12 border border-zinc-600 rounded"
-        //     />
-        //     <div className="flex flex-col text-left ">
-        //       <span className="text-sm">Text</span>
-        //       <span className="text-xs text-zinc-400">
-        //         Just start writing with plain text.
-        //       </span>
-        //     </div>
-        //   </button>
-        //   <button
-        //     className="flex items-center gap-2 p-1 rounded min-w-[280px] hover:bg-zinc-600"
-        //     onClick={() =>
-        //       editor.chain().focus().toggleHeading({ level: 1 }).run()
-        //     }
-        //   >
-        //     <img
-        //       src="http://www.notion.so/images/blocks/header.57a7576a.png"
-        //       alt="Text"
-        //       className="w-12 border border-zinc-600 rounded"
-        //     />
-        //     <div className="flex flex-col text-left ">
-        //       <span className="text-sm">Heading 1</span>
-        //       <span className="text-xs text-zinc-400">
-        //         Big section heading.
-        //       </span>
-        //     </div>
-        //   </button>
-        //   <button
-        //     className="flex items-center gap-2 p-1 rounded min-w-[280px] hover:bg-zinc-600"
-        //     onClick={addImage}
-        //   >
-        //     <img
-        //       src="http://www.notion.so/images/blocks/header.57a7576a.png"
-        //       alt="Text"
-        //       className="w-12 border border-zinc-600 rounded"
-        //     />
-        //     <div className="flex flex-col text-left ">
-        //       <span className="text-sm">Imagem</span>
-        //       <span className="text-xs text-zinc-400">Imagem padrão.</span>
-        //     </div>
-        //   </button>
-        // </FloatingMenu>
-      )} */}
+      {editor && <FloatingMenu editor={editor} />}
       {editor && (
         <BubbleMenu
           className="bg-zinc-700 shadow-xl border border-zinc-600 shadow-black/20 rounded-lg overflow-hidden flex divide-x divide-zinc-600"
@@ -160,6 +97,12 @@ export function Editor({ editable, content, onChange }: EditorProps) {
               data-active={editor.isActive("code")}
             >
               <RxCode className="w-4 h-4" />
+            </BubbleButton>
+            <BubbleButton
+              onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+              data-active={editor.isActive("codeBlock")}
+            >
+              <BiCodeBlock className="w-4 h-4" />
             </BubbleButton>
           </div>
         </BubbleMenu>

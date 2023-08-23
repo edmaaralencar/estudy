@@ -8,7 +8,7 @@ export default function Page() {
         </span>
         <span className="text-sm text-muted-foreground">
           Se você tem interesse em publicar algum resumo, clique no botão de
-          postar, faça sua postagem e aguarde aprovacação.
+          postar, faça sua postagem e aguarde aprovacação de algum administrador.
         </span>
       </div>
     </div>
