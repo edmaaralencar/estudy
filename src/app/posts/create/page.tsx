@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 
 export default function Page() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [content, setContent] = useState("");
   const [type, setType] = useState<"text" | "code" | "info">("text");
   const [codeName, setCodeName] = useState("");
@@ -39,6 +40,7 @@ export default function Page() {
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
+    setLoading(true);
 
     if (codeExamples.length === 0) {
       return toast.error("Adicione um exemplo de código.");
@@ -66,6 +68,8 @@ export default function Page() {
       router.push("/");
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -224,7 +228,7 @@ export default function Page() {
         </div>
 
         <div className="flex w-full justify-end mt-12">
-          <Button type="submit" className="max-w-xs w-full">
+          <Button isLoading={loading} disabled={loading} type="submit" className="max-w-xs w-full">
             Criar Post
           </Button>
         </div>

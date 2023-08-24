@@ -215,7 +215,7 @@ export function CodeEditor({ codeExamples }: CodeEditorProps) {
               !code && "opacity-50"
             )}
           >
-            {processing ? "Processing..." : "Compile and Execute"}
+            {processing ? "Processando..." : "Compile e Execute"}
           </button>
         </div>
         {/* <CustomInput
